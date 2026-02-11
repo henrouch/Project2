@@ -5,8 +5,8 @@ import string
 from urllib.parse import urlparse
 
 DATA_FILE = "urls.json"
-MAX_CODE_LEN = 11  # must be < 12
-ALLOWED_CODE_CHARS = string.ascii_letters + string.digits  # ASCII, URL-friendly
+MAX_CODE_LEN = 11  
+ALLOWED_CODE_CHARS = string.ascii_letters + string.digits  
 
 
 def is_valid_url(url: str) -> bool:
