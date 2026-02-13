@@ -10,12 +10,6 @@ ALLOWED_CODE_CHARS = string.ascii_letters + string.digits
 
 
 def is_valid_url(url: str) -> bool:
-    """
-    Basic validation:
-    - must parse
-    - must be http or https
-    - must have a network location (domain)
-    """
     try:
         parsed = urlparse(url.strip())
         return parsed.scheme in ("http", "https") and bool(parsed.netloc)
@@ -24,11 +18,6 @@ def is_valid_url(url: str) -> bool:
 
 
 def is_valid_code(code: str) -> bool:
-    """
-    Code rules:
-    - 1..MAX_CODE_LEN
-    - ASCII letters/digits only (simple + safe)
-    """
     if not (1 <= len(code) <= MAX_CODE_LEN):
         return False
     return all(c in ALLOWED_CODE_CHARS for c in code)
@@ -59,10 +48,6 @@ def save_data(filename: str, data):
 
 
 def generate_unique_code(existing_codes: set) -> str:
-    """
-    Generate a random code (1..MAX_CODE_LEN) until it's unique.
-    Use cryptographically strong randomness (secrets).
-    """
     # Choose a fixed length for consistency; 7-11 is common. We'll use 8.
     length = 8
     length = min(length, MAX_CODE_LEN)
@@ -113,13 +98,14 @@ URL Shortener (JSON-backed)
 1) Add/Shorten a URL
 2) Search/Expand a code
 3) Count shortened URLs
-4) List all (debug)
-5) Quit
+4) List all 
+5) Delete a URL
+6) Quit
 """
 
     while True:
         print(MENU)
-        choice = input("Choose an option (1-5): ").strip()
+        choice = input("Choose an option (1-6): ").strip()
 
         if choice == "1":
             long_url = input("Enter the long URL: ").strip()
@@ -127,12 +113,9 @@ URL Shortener (JSON-backed)
 
             try:
                 code = shorten_url(data, long_url, custom_code=custom if custom else None)
-                #Getting the domanin name
-                parsed = urlparse(long_url.strip())
                 save_data(DATA_FILE, data)
                 print(f"\nSaved!\nShort code: {code}")
-                #Printing domain and short Code
-                print(f"Example short URL: https://{parsed.netloc}/{code}\n")
+                print(f"Example short URL: https://myApp.com/{code}\n")
             except ValueError as e:
                 print(f"\nError: {e}\n")
 
@@ -156,8 +139,15 @@ URL Shortener (JSON-backed)
                 for c, u in data["code_to_url"].items():
                     print(f"  {c} -> {u}")
                 print()
-
         elif choice == "5":
+            code = input("Enter the short code to delete: ").strip()
+            if delete_by_code(data, code):
+                save_data(DATA_FILE, data)
+                print("\nDeleted successfully.\n")
+            else:
+                print("\nNot found: no URL stored for that code.\n")
+
+        elif choice == "6":
             print("Goodbye!")
             break
 
