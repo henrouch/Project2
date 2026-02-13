@@ -129,9 +129,12 @@ URL Shortener (JSON-backed)
 
             try:
                 code = shorten_url(data, long_url, custom_code=custom if custom else None)
+                #Getting the domanin name
+                parsed = urlparse(long_url.strip())
                 save_data(DATA_FILE, data)
                 print(f"\nSaved!\nShort code: {code}")
-                print(f"Example short URL: https://myApp.com/{code}\n")
+                #Printing domain and short Code
+                print(f"Example short URL: https://{parsed.netloc}/{code}\n")
             except ValueError as e:
                 print(f"\nError: {e}\n")
 
