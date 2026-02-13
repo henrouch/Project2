@@ -89,6 +89,22 @@ def expand_code(data, code: str) -> str | None:
     code = code.strip()
     return data["code_to_url"].get(code)
 
+def delete_by_code(data, code: str) -> bool:
+    """
+    Delete a stored URL by its short code.
+    Returns True if something was deleted, False if code not found.
+    """
+    code = code.strip()
+    long_url = data["code_to_url"].get(code)
+    if not long_url:
+        return False
+
+    # Remove both directions
+    del data["code_to_url"][code]
+    # Use pop with default just in case the reverse mapping is missing/corrupt
+    data["url_to_code"].pop(long_url, None)
+    return True
+
 
 def main():
     data = load_data(DATA_FILE)
